@@ -43,17 +43,19 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <div className="flex h-screen bg-gray-50">
+        <div className="flex h-screen bg-[#f8fafc] overflow-hidden font-sans antialiased">
             <Sidebar
                 isOpen={sidebarOpen}
                 onClose={() => setSidebarOpen(false)}
                 isCollapsed={isCollapsed}
                 toggleCollapse={() => setIsCollapsed(!isCollapsed)}
             />
-            <div className="flex flex-1 flex-col overflow-hidden">
+            <div className="flex flex-col flex-1 overflow-hidden relative">
                 <Navbar onMenuClick={() => setSidebarOpen(true)} />
-                <main className="flex-1 overflow-y-auto p-4 lg:p-8">
-                    {children}
+                <main className="flex-1 overflow-y-auto px-6 py-8 lg:px-10 custom-scrollbar">
+                    <div className="max-w-8xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                        {children}
+                    </div>
                 </main>
             </div>
         </div>

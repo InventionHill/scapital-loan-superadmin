@@ -7,6 +7,7 @@ export interface Admin {
   branchName: string;
   role: 'ADMIN' | 'SUPER_ADMIN';
   createdAt?: string;
+  mobileIds: string[];
 }
 
 export interface CreateAdminDto {
@@ -14,6 +15,7 @@ export interface CreateAdminDto {
   email: string;
   password?: string;
   branchName: string;
+  mobileIds?: string[];
 }
 
 export const adminService = {

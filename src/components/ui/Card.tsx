@@ -14,7 +14,7 @@ export const Card = ({
     return (
         <div
             className={cn(
-                'rounded-xl border border-gray-200 bg-white text-gray-950 shadow-sm',
+                'rounded-[2.5rem] border border-slate-100 bg-white text-slate-900 shadow-xl shadow-slate-200/40 transition-all duration-300',
                 className
             )}
             {...props}
@@ -57,7 +57,7 @@ export const CardContent = ({
     ...props
 }: React.HTMLAttributes<HTMLDivElement>) => {
     return (
-        <div className={cn('p-6 pt-0', className)} {...props}>
+        <div className={cn('p-8', className)} {...props}>
             {children}
         </div>
     );

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, LogOut, ChevronLeft, ChevronRight, PhoneForwarded, UserCheck, FileText } from 'lucide-react';
+import { LayoutDashboard, Users, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useAppDispatch } from '@/store/hooks';
 import { logout } from '@/store/slices/authSlice';
@@ -34,7 +34,8 @@ export function Sidebar({ isOpen, onClose, isCollapsed, toggleCollapse }: Sideba
     };
 
     const menuItems = [
-        { name: 'Admins Management', icon: Users, href: '/dashboard/admins' },
+        { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
+        { name: 'Admins', icon: Users, href: '/dashboard/admins' },
     ];
 
     return (
@@ -51,21 +52,41 @@ export function Sidebar({ isOpen, onClose, isCollapsed, toggleCollapse }: Sideba
             {/* Sidebar */}
             <div
                 className={clsx(
-                    'fixed inset-y-0 left-0 z-30 transform bg-white shadow-lg transition-all duration-300 lg:static lg:translate-x-0 flex flex-col h-full',
+                    'fixed inset-y-0 left-0 z-30 transform bg-white border-r border-slate-100 transition-all duration-500 ease-in-out lg:static lg:translate-x-0 flex flex-col h-full',
                     isOpen ? 'translate-x-0' : '-translate-x-full',
-                    isCollapsed ? 'w-20' : 'w-64'
+                    isCollapsed ? 'w-[88px]' : 'w-72',
+                    'shadow-[20px_0_40px_-15px_rgba(0,0,0,0.03)]'
                 )}
             >
-                <div className={clsx("flex h-16 items-center border-b transition-all flex-shrink-0", isCollapsed ? "justify-center px-0" : "justify-between px-6")}>
-                    {!isCollapsed && <h1 className="text-2xl font-bold text-primary truncate">Super Admin</h1>}
-                    {isCollapsed && <span className="text-2xl font-bold text-primary">SA</span>}
-
-                    <button onClick={toggleCollapse} className={clsx("hidden lg:block text-gray-400 hover:text-gray-600", !isCollapsed && "ml-auto")}>
-                        {isCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
-                    </button>
+                <div className="flex h-24 items-center justify-between px-8 flex-shrink-0">
+                    {!isCollapsed && (
+                        <div className="flex items-center justify-between w-full animate-in fade-in duration-500">
+                            <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-xl bg-[#008080] flex items-center justify-center shadow-lg shadow-primary/20">
+                                    <span className="text-white font-black text-xl">SA</span>
+                                </div>
+                                <span className="text-lg font-black text-slate-800 tracking-tight">Super Admin</span>
+                            </div>
+                            <button
+                                onClick={toggleCollapse}
+                                className="h-8 w-8 rounded-lg flex items-center justify-center text-slate-300 hover:text-[#008080] hover:bg-slate-50 transition-all duration-300 group"
+                            >
+                                <ChevronLeft className="h-5 w-5 transform group-hover:-translate-x-0.5 transition-transform" strokeWidth={2.5} />
+                            </button>
+                        </div>
+                    )}
+                    {isCollapsed && (
+                        <button
+                            onClick={toggleCollapse}
+                            className="mx-auto h-12 w-12 rounded-xl flex items-center justify-center text-slate-300 hover:text-[#008080] hover:bg-slate-50 transition-all duration-300 group"
+                        >
+                            <ChevronRight className="h-6 w-6 transform group-hover:translate-x-0.5 transition-transform" strokeWidth={2.5} />
+                        </button>
+                    )}
                 </div>
 
-                <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-2 custom-scrollbar">
+                <div className="flex-1  px-4 space-y-2 overflow-y-auto custom-scrollbar">
+
                     {menuItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = pathname === item.href;
@@ -74,36 +95,42 @@ export function Sidebar({ isOpen, onClose, isCollapsed, toggleCollapse }: Sideba
                                 key={item.name}
                                 href={item.href}
                                 className={clsx(
-                                    'flex items-center rounded-lg py-3 text-sm font-medium transition-colors flex-shrink-0',
+                                    'flex items-center rounded-2xl py-3.5 text-sm font-bold transition-all duration-300 group relative overflow-hidden',
                                     isActive
-                                        ? 'bg-primary/10 text-primary'
-                                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900',
-                                    isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'
+                                        ? 'bg-slate-50 text-[#008080] shadow-sm shadow-slate-100'
+                                        : 'text-slate-800 hover:bg-slate-50 hover:text-slate-600',
+                                    isCollapsed ? 'justify-center px-0 h-14' : 'px-5 gap-4'
                                 )}
                                 onClick={() => onClose()}
                                 title={isCollapsed ? item.name : undefined}
                             >
-                                <Icon className="h-5 w-5 flex-shrink-0" />
-                                {!isCollapsed && <span className="truncate">{item.name}</span>}
+                                {isActive && (
+                                    <div className="absolute left-0 top-1/2 " />
+                                )}
+                                <Icon className={clsx("h-[22px] w-[22px] transition-all duration-300",
+                                    isActive ? "text-[#008080] scale-110" : "text-slate-800 group-hover:text-slate-500")}
+                                />
+                                {!isCollapsed && <span className="tracking-tight">{item.name}</span>}
                             </Link>
                         );
                     })}
-                </nav>
+                </div>
 
-                <div className="p-4 border-t border-gray-100 flex-shrink-0">
+                <div className="p-6 border-t border-slate-50 flex-shrink-0">
                     <button
                         onClick={handleLogoutClick}
                         className={clsx(
-                            "flex w-full items-center rounded-lg py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors",
-                            isCollapsed ? "justify-center px-2" : "gap-3 px-4"
+                            "flex items-center rounded-2xl py-4 transition-all duration-300 group",
+                            "text-slate-400 hover:text-rose-500 hover:bg-rose-50",
+                            isCollapsed ? "justify-center h-14 px-0" : "px-5 gap-4 w-full"
                         )}
-                        title={isCollapsed ? "Logout" : undefined}
                     >
-                        <LogOut className="h-5 w-5 flex-shrink-0" />
-                        {!isCollapsed && <span>Logout</span>}
+                        <LogOut className="h-5 w-5" />
+                        {!isCollapsed && <span className="text-sm font-bold tracking-tight">Logout System</span>}
                     </button>
                 </div>
             </div>
+
 
             <ConfirmationModal
                 isOpen={isLogoutModalOpen}

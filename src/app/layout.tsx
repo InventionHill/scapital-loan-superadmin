@@ -10,8 +10,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Admin Panel",
-  description: "Secure Admin Panel Dashboard",
+  title: "Loan Super Admin",
+  description: "Secure Loan Super Admin Dashboard",
   icons: {
     icon: '/favicon.ico',
   },

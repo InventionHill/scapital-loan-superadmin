@@ -28,19 +28,29 @@ export function ConfirmationModal({
     variant = 'danger',
     isLoading = false,
 }: ConfirmationModalProps) {
-    const [isVisible, setIsVisible] = useState(false);
+    const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+    const [isVisible, setIsVisible] = useState(isOpen);
+
+    if (isOpen !== prevIsOpen) {
+        setPrevIsOpen(isOpen);
+        if (isOpen) {
+            setIsVisible(true);
+        }
+    }
 
     useEffect(() => {
         if (isOpen) {
-            setIsVisible(true);
             document.body.style.overflow = 'hidden';
         } else {
-            setTimeout(() => setIsVisible(false), 200); // Animation delay
-            document.body.style.overflow = 'unset';
+            const timer = setTimeout(() => {
+                setIsVisible(false);
+                document.body.style.overflow = 'unset';
+            }, 200); // Animation delay
+            return () => {
+                clearTimeout(timer);
+                document.body.style.overflow = 'unset';
+            };
         }
-        return () => {
-            document.body.style.overflow = 'unset';
-        };
     }, [isOpen]);
 
     if (!isVisible && !isOpen) return null;
