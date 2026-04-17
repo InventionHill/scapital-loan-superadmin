@@ -14,7 +14,7 @@ export interface AuthResponse {
 
 export const authService = {
   login: async (email: string, password: string): Promise<AuthResponse> => {
-    const response = await axios.post<AuthResponse>('auth/login', { email, password });
+    const response = await axios.post<AuthResponse>('v1/auth/login', { email, password });
     if (response.data.access_token) {
       localStorage.setItem('accessToken', response.data.access_token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
@@ -23,7 +23,7 @@ export const authService = {
   },
 
   register: async (name: string, email: string, password: string): Promise<AuthResponse> => {
-      const response = await axios.post<AuthResponse>('auth/register', { 
+      const response = await axios.post<AuthResponse>('v1/auth/register', { 
           name, 
           email, 
           password 
@@ -36,7 +36,7 @@ export const authService = {
   }, 
 
   getMe: async (): Promise<User> => {
-      const response = await axios.get<User>('auth/me');
+      const response = await axios.get<User>('v1/auth/me');
       return response.data;
   },
 

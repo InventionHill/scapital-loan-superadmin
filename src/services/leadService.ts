@@ -16,7 +16,7 @@ export interface LeadStats {
 
 export const leadService = {
     getStats: async (): Promise<LeadStats> => {
-        const response = await axiosInstance.get('/leads/stats');
+        const response = await axiosInstance.get('v1/leads/stats');
         return response.data;
     }
 };
