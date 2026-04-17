@@ -19,23 +19,23 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         return (
             <div className="w-full">
                 {label && (
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                    <label className="mb-2.5 block text-[10px] font-black uppercase tracking-widest text-slate-400">
                         {label}
                     </label>
                 )}
-                <div className="relative">
+                <div className="relative group">
                     {leftIcon && (
-                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
                             {leftIcon}
                         </div>
                     )}
                     <input
                         ref={ref}
                         className={cn(
-                            'flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50',
-                            error && 'border-red-500 focus:ring-red-500',
-                            leftIcon && 'pl-10',
-                            rightIcon && 'pr-10',
+                            'flex h-14 w-full rounded-2xl border border-slate-100 bg-slate-50/50 px-4 py-3 text-sm font-bold text-[#111827] placeholder:text-slate-300 placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all disabled:cursor-not-allowed disabled:opacity-50',
+                            error && 'border-rose-500 focus:ring-rose-200',
+                            leftIcon && 'pl-11',
+                            rightIcon && 'pr-11',
                             className
                         )}
                         {...props}
@@ -43,8 +43,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                     {rightIcon && (
                         <div
                             className={cn(
-                                "absolute inset-y-0 right-0 flex items-center pr-3",
-                                onRightIconClick && "cursor-pointer text-gray-400 hover:text-gray-600"
+                                "absolute inset-y-0 right-0 flex items-center pr-4",
+                                onRightIconClick && "cursor-pointer text-slate-400 hover:text-primary transition-colors"
                             )}
                             onClick={onRightIconClick}
                         >
@@ -52,7 +52,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                         </div>
                     )}
                 </div>
-                {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+                {error && <p className="mt-2 text-xs font-bold text-rose-500 flex items-center gap-1"><span className="h-1 w-1 rounded-full bg-rose-500" /> {error}</p>}
             </div>
         );
     }

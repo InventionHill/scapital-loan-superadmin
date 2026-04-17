@@ -13,7 +13,6 @@ export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const [isFormValid, setIsFormValid] = useState(false);
 
     const dispatch = useAppDispatch();
     const { loading, error, isAuthenticated } = useAppSelector((state) => state.auth);
@@ -25,9 +24,7 @@ export default function LoginPage() {
         }
     }, [isAuthenticated, router]);
 
-    useEffect(() => {
-        setIsFormValid(email.includes('@') && password.length >= 6);
-    }, [email, password]);
+    const isFormValid = email.includes('@') && password.length >= 6;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -52,7 +49,7 @@ export default function LoginPage() {
                             <Input
                                 label="Email"
                                 type="email"
-                                placeholder="admin@example.com"
+                                placeholder="email@address.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
@@ -93,9 +90,6 @@ export default function LoginPage() {
                             Login
                         </Button>
 
-                        <div className="text-center text-xs text-gray-400 mt-4">
-                            Demo: admin@example.com / password
-                        </div>
                     </form>
                 </CardContent>
             </Card>

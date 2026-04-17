@@ -12,19 +12,29 @@ interface ModalProps {
 }
 
 export function Modal({ isOpen, onClose, children, title }: ModalProps) {
-    const [isVisible, setIsVisible] = useState(false);
+    const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+    const [isVisible, setIsVisible] = useState(isOpen);
+
+    if (isOpen !== prevIsOpen) {
+        setPrevIsOpen(isOpen);
+        if (isOpen) {
+            setIsVisible(true);
+        }
+    }
 
     useEffect(() => {
         if (isOpen) {
-            setIsVisible(true);
             document.body.style.overflow = 'hidden';
         } else {
-            setTimeout(() => setIsVisible(false), 200);
-            document.body.style.overflow = 'unset';
+            const timer = setTimeout(() => {
+                setIsVisible(false);
+                document.body.style.overflow = 'unset';
+            }, 200);
+            return () => {
+                clearTimeout(timer);
+                document.body.style.overflow = 'unset';
+            };
         }
-        return () => {
-            document.body.style.overflow = 'unset';
-        };
     }, [isOpen]);
 
     if (!isVisible && !isOpen) return null;
