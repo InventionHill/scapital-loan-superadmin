@@ -41,7 +41,8 @@ export const adminService = {
   },
 
   getAdminMobileUsers: async (id: string) => {
-    const response = await axiosInstance.get(`v1/auth/admins/${id}/mobile-users`);
+    // Add a cache-busting timestamp to prevent aggressive browser/proxy caching
+    const response = await axiosInstance.get(`v1/auth/admins/${id}/mobile-users?_t=${new Date().getTime()}`);
     return response.data;
   },
 
