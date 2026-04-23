@@ -146,8 +146,13 @@ export default function AdminMobileUsersPage({ params }: { params: Promise<{ id:
     if (!selectedUser) return;
     setIsActionLoading(true);
     try {
-      const updateData: any = { ...formData };
-      if (!updateData.password) delete updateData.password;
+      const updateData: any = {
+        name: formData.name,
+        username: formData.username,
+        mobileNumber: formData.mobileNumber,
+        role: formData.role
+      };
+      if (formData.password) updateData.password = formData.password;
 
       await adminService.updateMobileUser(selectedUser.id, updateData);
       toast.success('User updated successfully');
@@ -235,6 +240,7 @@ export default function AdminMobileUsersPage({ params }: { params: Promise<{ id:
       role: user.role || 'USER'
     });
     setShowPassword(false);
+    setIsRoleDropdownOpen(false);
     setIsEditModalOpen(true);
   };
 
@@ -247,6 +253,7 @@ export default function AdminMobileUsersPage({ params }: { params: Promise<{ id:
       role: 'USER'
     });
     setShowPassword(false);
+    setIsRoleDropdownOpen(false);
     setIsCreateModalOpen(true);
   };
 
@@ -375,6 +382,15 @@ export default function AdminMobileUsersPage({ params }: { params: Promise<{ id:
                             <div>
                               <div className="font-extrabold text-[#111827] text-lg group-hover:text-primary transition-colors leading-none">
                                 {user.name || user.username}
+                                {user.role === 'MANAGER' ? (
+                                  <span className="ml-2 px-2 py-0.5 rounded-md bg-amber-50 text-amber-600 text-[9px] font-black uppercase tracking-widest border border-amber-100">
+                                    Manager
+                                  </span>
+                                ) : (
+                                  <span className="ml-2 px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-600 text-[9px] font-black uppercase tracking-widest border border-indigo-100">
+                                    User
+                                  </span>
+                                )}
                               </div>
                               <div className="text-xs font-bold text-slate-400 flex items-center gap-2 mt-2">
                                 <div className="bg-slate-100 p-1 rounded-md">
@@ -718,7 +734,7 @@ export default function AdminMobileUsersPage({ params }: { params: Promise<{ id:
             label="FULL NAME"
             leftIcon={<User size={18} />}
             value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
             required
             className="rounded-2xl border-slate-100 py-6"
           />
@@ -727,7 +743,7 @@ export default function AdminMobileUsersPage({ params }: { params: Promise<{ id:
               label="USERNAME"
               leftIcon={<LayoutDashboard size={16} />}
               value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9_.]/g, '') })}
+              onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9_.]/g, '') }))}
               required
               className="rounded-2xl border-slate-100 py-6 font-mono"
             />
@@ -735,7 +751,7 @@ export default function AdminMobileUsersPage({ params }: { params: Promise<{ id:
               label="CONTACT NUMBER"
               leftIcon={<Phone size={16} />}
               value={formData.mobileNumber}
-              onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value.replace(/\D/g, '') })}
+              onChange={(e) => setFormData(prev => ({ ...prev, mobileNumber: e.target.value.replace(/\D/g, '') }))}
               maxLength={10}
               className="rounded-2xl border-slate-100 py-6"
             />
@@ -746,12 +762,77 @@ export default function AdminMobileUsersPage({ params }: { params: Promise<{ id:
             type={showPassword ? 'text' : 'password'}
             placeholder="Leave blank to keep current"
             value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
             className="rounded-2xl border-slate-100 py-6"
             rightIcon={showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             onRightIconClick={() => setShowPassword(!showPassword)}
             autoComplete="new-password"
           />
+
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Access Level (Role)</label>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
+                className={clsx(
+                  "w-full flex items-center justify-between px-4 py-4 rounded-2xl border transition-all duration-300",
+                  isRoleDropdownOpen
+                    ? "bg-white border-primary shadow-lg shadow-primary/10 ring-4 ring-primary/5"
+                    : "bg-slate-50/50 border-slate-100 text-slate-900 hover:bg-white hover:border-slate-200"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <Shield size={18} className={isRoleDropdownOpen ? "text-primary" : "text-slate-400"} />
+                  <span className="text-sm font-bold">
+                    {formData.role === 'MANAGER' ? 'Manager' : 'User'}
+                  </span>
+                </div>
+                <ChevronDown size={16} className={clsx("transition-transform duration-300", isRoleDropdownOpen && "rotate-180 text-primary")} />
+              </button>
+
+              {isRoleDropdownOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setIsRoleDropdownOpen(false)} />
+                  <div className="absolute top-full mt-2 left-0 w-full bg-white border border-slate-100 rounded-2xl shadow-2xl py-2 z-20 animate-in fade-in zoom-in-95 duration-200 origin-top">
+                    {[
+                      { id: 'USER', label: 'User', desc: 'Default mobile application access', icon: User, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+                      { id: 'MANAGER', label: 'Manager', desc: 'Access to team & lead management', icon: Users, color: 'text-amber-600', bg: 'bg-amber-50' }
+                    ].map((role) => (
+                      <button
+                        key={role.id}
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({ ...prev, role: role.id }));
+                          setIsRoleDropdownOpen(false);
+                        }}
+                        className={clsx(
+                          "w-full text-left px-4 py-3 flex items-center justify-between transition-all hover:bg-slate-50 group",
+                          formData.role === role.id ? "bg-primary/5" : ""
+                        )}
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className={clsx(
+                            "h-10 w-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110",
+                            formData.role === role.id ? "bg-primary/10" : role.bg
+                          )}>
+                            <role.icon size={18} className={formData.role === role.id ? "text-primary" : role.color} />
+                          </div>
+                          <div className="flex flex-col">
+                            <span className={clsx("text-sm font-bold", formData.role === role.id ? "text-primary" : "text-slate-900")}>{role.label}</span>
+                            <span className="text-[10px] text-slate-400 font-medium">{role.desc}</span>
+                          </div>
+                        </div>
+                        {formData.role === role.id && (
+                          <div className="h-2 w-2 rounded-full bg-primary" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
 
           <div className="flex gap-4 pt-4">
             <button
@@ -783,7 +864,7 @@ export default function AdminMobileUsersPage({ params }: { params: Promise<{ id:
             label="FULL NAME"
             leftIcon={<User size={18} />}
             value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
             onFocus={(e) => {
               if (!formData.username && formData.name) {
                 setFormData(prev => ({
@@ -801,7 +882,7 @@ export default function AdminMobileUsersPage({ params }: { params: Promise<{ id:
               label="USERNAME"
               leftIcon={<LayoutDashboard size={16} />}
               value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9_.]/g, '') })}
+              onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9_.]/g, '') }))}
               onFocus={() => {
                 if (!formData.username && formData.name) {
                   setFormData(prev => ({
@@ -818,7 +899,7 @@ export default function AdminMobileUsersPage({ params }: { params: Promise<{ id:
               label="CONTACT NUMBER"
               leftIcon={<Phone size={16} />}
               value={formData.mobileNumber}
-              onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value.replace(/\D/g, '') })}
+              onChange={(e) => setFormData(prev => ({ ...prev, mobileNumber: e.target.value.replace(/\D/g, '') }))}
               required
               maxLength={10}
               placeholder="10-digit number"
@@ -831,7 +912,7 @@ export default function AdminMobileUsersPage({ params }: { params: Promise<{ id:
             type={showPassword ? 'text' : 'password'}
             placeholder="Strong password required"
             value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
             required
             className="rounded-2xl border-slate-100 py-6"
             rightIcon={showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -873,7 +954,7 @@ export default function AdminMobileUsersPage({ params }: { params: Promise<{ id:
                         key={role.id}
                         type="button"
                         onClick={() => {
-                          setFormData({ ...formData, role: role.id });
+                          setFormData(prev => ({ ...prev, role: role.id }));
                           setIsRoleDropdownOpen(false);
                         }}
                         className={clsx(
