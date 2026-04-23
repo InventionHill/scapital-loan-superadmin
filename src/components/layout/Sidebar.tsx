@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Users, LogOut, ChevronLeft, ChevronRight, FileSpreadsheet } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useAppDispatch } from '@/store/hooks';
 import { logout } from '@/store/slices/authSlice';
@@ -36,6 +36,7 @@ export function Sidebar({ isOpen, onClose, isCollapsed, toggleCollapse }: Sideba
     const menuItems = [
         { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
         { name: 'Admins', icon: Users, href: '/dashboard/admins' },
+        { name: 'All Leads', icon: FileSpreadsheet, href: '/dashboard/leads' },
     ];
 
     return (
@@ -89,7 +90,9 @@ export function Sidebar({ isOpen, onClose, isCollapsed, toggleCollapse }: Sideba
 
                     {menuItems.map((item) => {
                         const Icon = item.icon;
-                        const isActive = pathname === item.href;
+                        const isActive = item.href === '/dashboard' 
+                            ? pathname === '/dashboard' 
+                            : pathname.startsWith(item.href);
                         return (
                             <Link
                                 key={item.name}

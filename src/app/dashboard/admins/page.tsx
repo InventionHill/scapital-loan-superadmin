@@ -2,14 +2,20 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
-import { Plus, User, Mail, Building, Edit2, Trash2, Key, Eye, EyeOff } from 'lucide-react';
+import { Plus, User, Mail, Building, Edit2, Trash2, Key, Eye, EyeOff, ShieldCheck, ShieldAlert } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
+import { Switch } from '@/components/ui/Switch';
 import { Input } from '@/components/ui/Input';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { adminService, Admin, CreateAdminDto } from '@/services/adminService';
 import { toast } from 'react-hot-toast';
+import Link from 'next/link';
+import { clsx } from 'clsx';
+import { useRouter } from 'next/navigation';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 
 export default function AdminsManagementPage() {
+    const router = useRouter();
     const [admins, setAdmins] = useState<Admin[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isActionLoading, setIsActionLoading] = useState(false);
@@ -154,6 +160,17 @@ export default function AdminsManagementPage() {
         }
     };
 
+    const handleToggleStatus = async (id: string, isEnabled: boolean) => {
+        try {
+            await adminService.toggleAdminStatus(id, isEnabled);
+            setAdmins(prev => prev.map(admin => admin.id === id ? { ...admin, isEnabled } : admin));
+            toast.success(`Admin ${isEnabled ? 'enabled' : 'disabled'} successfully`);
+        } catch (error) {
+            console.error('Failed to toggle status:', error);
+            toast.error('Failed to update status');
+        }
+    };
+
     const openEditModal = (admin: Admin) => {
         setSelectedAdmin(admin);
         setFormData({
@@ -183,6 +200,9 @@ export default function AdminsManagementPage() {
         <div className="space-y-8 pb-12">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="space-y-1">
+                    <div className="mb-2">
+                        <Breadcrumbs />
+                    </div>
                     <h1 className="text-3xl font-extrabold tracking-tight text-[#111827]">Admins Management</h1>
                     <p className="text-sm font-semibold text-slate-400">Manage centralized access and branch assignments across the entire platform.</p>
                 </div>
@@ -207,11 +227,11 @@ export default function AdminsManagementPage() {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="border-b border-slate-50 bg-[#fafcfc]/50">
-                                    <th className="px-8 py-6 text-xs font-extrabold uppercase tracking-widest text-slate-400">Administrator</th>
-                                    <th className="px-8 py-6 text-xs font-extrabold uppercase tracking-widest text-slate-400">Branch Name</th>
-                                    <th className="px-8 py-6 text-xs font-extrabold uppercase tracking-widest text-slate-400">Mobile IDs</th>
-                                    <th className="px-8 py-6 text-xs font-extrabold uppercase tracking-widest text-slate-400">Status</th>
-                                    <th className="px-8 py-6 text-xs font-extrabold uppercase tracking-widest text-slate-400 text-right">Settings</th>
+                                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Administrator</th>
+                                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Branch Name</th>
+                                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Mobile IDs</th>
+                                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Account Status</th>
+                                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Settings</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50">
@@ -237,17 +257,21 @@ export default function AdminsManagementPage() {
                                     </tr>
                                 ) : (
                                     admins.map((admin) => (
-                                        <tr key={admin.id} className="hover:bg-[#fafcfc]/80 transition-all group duration-300">
+                                        <tr 
+                                            key={admin.id} 
+                                            onClick={() => router.push(`/dashboard/admins/${admin.id}`)}
+                                            className="hover:bg-[#fafcfc]/80 transition-all group duration-300 cursor-pointer"
+                                        >
                                             <td className="px-8 py-7">
                                                 <div className="flex items-center gap-5">
-                                                    <div className="relative">
-                                                        <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary to-[#085a59] flex items-center justify-center text-white font-black text-xl shadow-xl shadow-primary/20 group-hover:scale-105 transition-all duration-500">
-                                                            {admin.name.charAt(0)}
+                                                    <div className="relative cursor-pointer block group/avatar">
+                                                        <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary to-[#085a59] flex items-center justify-center text-white font-black text-xl shadow-xl shadow-primary/20 group-hover/avatar:scale-105 group-hover/avatar:rotate-3 transition-all duration-500">
+                                                            {admin.name.charAt(0).toUpperCase()}
                                                         </div>
-                                                        <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-emerald-500 border-4 border-white shadow-sm" />
+                                                        <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-emerald-500 border-4 border-white shadow-lg" />
                                                     </div>
                                                     <div>
-                                                        <div className="font-extrabold text-[#111827] text-lg group-hover:text-primary transition-colors leading-none">{admin.name}</div>
+                                                        <span className="font-extrabold text-[#111827] text-lg group-hover:text-primary transition-colors leading-none cursor-pointer block">{admin.name}</span>
                                                         <div className="text-xs font-bold text-slate-400 flex items-center gap-2 mt-2">
                                                             <div className="bg-slate-100 p-1 rounded-md">
                                                                 <Mail size={12} className="text-slate-500" />
@@ -278,37 +302,57 @@ export default function AdminsManagementPage() {
                                                     )}
                                                 </div>
                                             </td>
-                                            <td className="px-8 py-7">
-                                                <div className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest">
-                                                    <div className="flex h-2 w-12 bg-slate-100 rounded-full overflow-hidden">
-                                                        <div className="h-full w-full bg-emerald-500 rounded-full" />
-                                                    </div>
-                                                    <span className="text-emerald-500">Active</span>
+                                            <td className="px-8 py-7 text-center">
+                                                <div 
+                                                    className="flex flex-col items-center gap-2"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    <Switch
+                                                        checked={admin.isEnabled ?? true}
+                                                        onChange={(checked) => handleToggleStatus(admin.id, checked)}
+                                                        disabled={admin.role === 'SUPER_ADMIN'}
+                                                    />
+                                                    <span className={clsx(
+                                                        "text-[9px] font-black uppercase tracking-[0.1em]",
+                                                        admin.isEnabled ?? true ? "text-emerald-500" : "text-rose-500"
+                                                    )}>
+                                                        {admin.isEnabled ?? true ? 'ACTIVE' : 'DISABLED'}
+                                                    </span>
                                                 </div>
                                             </td>
                                             <td className="px-8 py-7 text-right">
-                                                <div className="flex justify-end gap-3 transition-all duration-300">
+                                                <div 
+                                                    className="flex justify-end gap-2.5 transition-all duration-300"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    <Link
+                                                        href={`/dashboard/admins/${admin.id}`}
+                                                        className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-500/20 transition-all border border-indigo-100 shadow-sm shadow-indigo-500/5"
+                                                        title="View Mobile Users"
+                                                    >
+                                                        <Eye size={16} strokeWidth={2.5} />
+                                                    </Link>
                                                     <button
                                                         onClick={() => openEditModal(admin)}
-                                                        className="h-11 w-11 flex items-center justify-center text-primary transition-all bg-primary/5 hover:bg-primary/10 rounded-2xl border border-primary/20"
-                                                        title="Refine Settings"
+                                                        className="p-2.5 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all border border-primary/10 shadow-sm shadow-primary/5"
+                                                        title="Edit Admin"
                                                     >
-                                                        <Edit2 size={18} strokeWidth={2.5} />
+                                                        <Edit2 size={16} strokeWidth={2.5} />
                                                     </button>
                                                     <button
                                                         onClick={() => openResetModal(admin)}
-                                                        className="h-11 w-11 flex items-center justify-center text-amber-500 transition-all bg-amber-50 hover:bg-amber-100 rounded-2xl border border-amber-100"
-                                                        title="Reset Security Key"
+                                                        className="p-2.5 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-500/20 transition-all border border-amber-100 shadow-sm shadow-amber-500/5"
+                                                        title="Reset Password"
                                                     >
-                                                        <Key size={18} strokeWidth={2.5} />
+                                                        <Key size={16} strokeWidth={2.5} />
                                                     </button>
                                                     <button
                                                         onClick={() => openDeleteModal(admin)}
-                                                        className="h-11 w-11 flex items-center justify-center text-rose-500 transition-all bg-rose-50 hover:bg-rose-100 rounded-2xl border border-rose-100 disabled:opacity-30 disabled:grayscale disabled:pointer-events-none"
+                                                        className="p-2.5 rounded-xl bg-rose-50 text-rose-500 hover:bg-rose-500/20 transition-all border border-rose-100 shadow-sm shadow-rose-500/5 disabled:opacity-30 disabled:grayscale disabled:pointer-events-none"
                                                         disabled={admin.role === 'SUPER_ADMIN'}
-                                                        title={admin.role === 'SUPER_ADMIN' ? "Owner Lock" : "Terminate Access"}
+                                                        title={admin.role === 'SUPER_ADMIN' ? "Owner Lock" : "Delete Admin"}
                                                     >
-                                                        <Trash2 size={18} strokeWidth={2.5} />
+                                                        <Trash2 size={16} strokeWidth={2.5} />
                                                     </button>
                                                 </div>
                                             </td>

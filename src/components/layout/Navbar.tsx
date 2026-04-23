@@ -53,7 +53,6 @@ export function Navbar({ onMenuClick }: NavbarProps) {
                     >
                         <Menu className="h-6 w-6" />
                     </button>
-
                 </div>
 
                 <div className="flex items-center gap-6">
@@ -73,17 +72,19 @@ export function Navbar({ onMenuClick }: NavbarProps) {
                         </button>
 
                         {isDropdownOpen && (
-                            <div className="absolute right-0 mt-4 w-64 rounded-[1rem] bg-white p-3 ring-1 ring-black/5 border border-slate-100 animate-in fade-in zoom-in-95 slide-in-from-top-4 duration-300">
-                                <div className="px-2 py-2 border-b border-slate-50 mb-2">
+                            <div className="absolute right-0 mt-4 w-72 rounded-[2.5rem] bg-white p-4 shadow-[0_20px_50px_rgba(0,0,0,0.15)] ring-1 ring-black/5 border border-slate-100 origin-top-right">
+                                <div className="px-5 py-5 border-b border-slate-50 mb-4 bg-slate-50/50 rounded-[1.5rem]">
                                     <p className="text-sm font-black text-slate-800">{user?.name || 'Admin User'}</p>
-                                    <p className="text-xs text-slate-400 font-bold truncate mt-1">{user?.email}</p>
+                                    <p className="text-[10px] text-slate-400 font-bold truncate mt-1 uppercase tracking-widest">{user?.email}</p>
                                 </div>
                                 <div className="space-y-1">
                                     <button
                                         onClick={handleLogoutClick}
-                                        className="flex w-full items-center gap-3 px-3.5 py-3.5 text-xs font-black uppercase tracking-widest text-rose-500 hover:bg-rose-50 rounded-2xl transition-all"
+                                        className="flex w-full items-center gap-3 px-4 py-4 text-[10px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-50 rounded-[1.5rem] transition-all group"
                                     >
-                                        <LogOut className="h-4 w-4" strokeWidth={2.5} />
+                                        <div className="h-10 w-10 rounded-xl bg-rose-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                            <LogOut className="h-4 w-4" strokeWidth={2.5} />
+                                        </div>
                                         Logout System
                                     </button>
                                 </div>

@@ -8,10 +8,12 @@ interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
     children: React.ReactNode;
-    title?: string;
+    title?: React.ReactNode;
+    footer?: React.ReactNode;
+    size?: 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | 'full';
 }
 
-export function Modal({ isOpen, onClose, children, title }: ModalProps) {
+export function Modal({ isOpen, onClose, children, title, footer, size = 'lg' }: ModalProps) {
     const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
     const [isVisible, setIsVisible] = useState(isOpen);
 
@@ -39,6 +41,16 @@ export function Modal({ isOpen, onClose, children, title }: ModalProps) {
 
     if (!isVisible && !isOpen) return null;
 
+    const maxWidthClass = {
+        'lg': 'max-w-lg',
+        'xl': 'max-w-xl',
+        '2xl': 'max-w-2xl',
+        '3xl': 'max-w-3xl',
+        '4xl': 'max-w-4xl',
+        '5xl': 'max-w-5xl',
+        'full': 'max-w-[95vw]'
+    }[size];
+
     return (
         <div className={clsx(
             "fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-200",
@@ -46,28 +58,44 @@ export function Modal({ isOpen, onClose, children, title }: ModalProps) {
         )}>
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+                className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
                 onClick={onClose}
             />
 
             {/* Modal Content */}
             <div className={clsx(
-                "relative w-full max-w-lg transform rounded-lg bg-white p-6 shadow-xl transition-all duration-200",
-                isOpen ? "scale-100 translate-y-0" : "scale-95 translate-y-4"
+                "relative w-full max-h-[80vh] flex flex-col transform rounded-[1.5rem] bg-white shadow-2xl transition-all duration-300 overflow-hidden",
+                maxWidthClass,
+                isOpen ? "scale-100 translate-y-0" : "scale-95 translate-y-8"
             )}>
-                {/* Header (Optional or if title provided) */}
-                <button
-                    onClick={onClose}
-                    className="absolute right-4 top-4 text-gray-400 hover:text-gray-500"
-                >
-                    <X className="h-5 w-5" />
-                </button>
+                {/* Header */}
+                <div className="shrink-0 p-8 pb-4 flex items-center justify-between border-b border-slate-50">
+                    <div className="flex-1">
+                        {typeof title === 'string' ? (
+                            <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">{title}</h3>
+                        ) : (
+                            title
+                        )}
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="h-10 w-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:text-slate-500 hover:bg-slate-100 transition-all ml-4"
+                    >
+                        <X className="h-6 w-6" />
+                    </button>
+                </div>
 
-                {title && (
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 pr-8">{title}</h3>
+                {/* Body */}
+                <div className="flex-1 overflow-y-auto px-8 py-4 custom-scrollbar">
+                    {children}
+                </div>
+
+                {/* Footer */}
+                {footer && (
+                    <div className="shrink-0 p-8 pt-4 border-t border-slate-50 bg-white">
+                        {footer}
+                    </div>
                 )}
-
-                {children}
             </div>
         </div>
     );

@@ -98,7 +98,7 @@ export default function OverviewDashboard() {
                 />
 
                 <StatCard
-                    title="COMPLETED"
+                    title="CALL CONNECTED"
                     value={stats?.completedLeads || 0}
                     icon={CheckCircle2}
                     iconColor="text-emerald-500"
