@@ -138,7 +138,7 @@ export const leadService = {
     },
 
     importLeads: async (data: { leads: { phoneNumber: string; name?: string; branchId?: string }[] }) => {
-        const response = await axios.post<{ imported: number; skipped: number; errors: any[] }>('v1/leads/import', data);
+        const response = await axios.post<{ imported: number; newLeads: number; updatedLeads: number; skipped: number; errors: any[] }>('v1/leads/import', data);
         return response.data;
     },
 
